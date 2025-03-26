@@ -1,4 +1,4 @@
--- Таблица для хранения информации о пользователях
+-- Таблица пользователей с дополнительными полями
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY, -- Уникальный идентификатор пользователя
 
@@ -9,11 +9,43 @@ CREATE TABLE users (
     first_name VARCHAR(50), -- Имя пользователя
     last_name VARCHAR(50), -- Фамилия пользователя
     bio TEXT, -- Краткая информация о пользователе
-    profile_picture_url VARCHAR(255), -- Ссылка на аватарку
+    profile_picture_url VARCHAR(255) NOT NULL DEFAULT 'default.png', -- Ссылка на аватарку
 
     role VARCHAR(20) NOT NULL DEFAULT 'user',
+    blocked BOOLEAN DEFAULT false,
+    deleted BOOLEAN DEFAULT false,
+    deleted_at TIMESTAMP,
+    last_login TIMESTAMP,
+    login_count INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Дата и время регистрации
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Дата и время последнего обновления
+);
+
+-- Таблица для хранения токенов пользователей
+CREATE TABLE user_tokens (
+    token_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    token TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL
+);
+
+-- Таблица для токенов сброса пароля
+CREATE TABLE password_reset_tokens (
+    reset_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NOT NULL
+);
+
+-- Таблица для уведомлений пользователей
+CREATE TABLE user_notifications (
+    notification_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Таблица для хранения постов пользователей
