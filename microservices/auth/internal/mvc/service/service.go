@@ -33,27 +33,14 @@ type User interface {
 	GetNotifications(userId int) ([]dto.Notification, error)
 }
 
-// Admin интерфейс для админских функций
-type Admin interface {
-	GetUsers() ([]dto.UserProfile, error)
-	GetUserById(userId int) (dto.UserProfile, error)
-	BlockUser(userId int, blocked bool) error
-	ChangeUserRole(userId int, role string) error
-	GetUserStats(userId int) (dto.UserStats, error)
-	GetSystemStats() (dto.SystemStats, error)
-	DeleteUser(userId int) error
-}
-
 type Service struct {
 	Auth
 	User
-	Admin
 }
 
 func NewService(repos *repository.Repository, authConfig *config.AuthConfig) *Service {
 	return &Service{
 		Auth:  NewAuthService(repos.Auth, authConfig),
 		User:  NewUserService(repos.User),
-		Admin: NewAdminService(repos.Admin),
 	}
 }

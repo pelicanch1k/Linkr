@@ -3,8 +3,9 @@ package service
 import (
 	"fmt"
 
-	"github.com/pelicanch1k/Linkr/auth/internal/dto"
-	"github.com/pelicanch1k/Linkr/auth/internal/mvc/repository"
+	"github.com/jinzhu/copier"
+	"github.com/pelicanch1k/Linkr/admin/internal/dto"
+	"github.com/pelicanch1k/Linkr/admin/internal/repository"
 )
 
 type AdminService struct {
@@ -16,11 +17,35 @@ func NewAdminService(repo repository.Admin) *AdminService {
 }
 
 func (s *AdminService) GetUsers() ([]dto.UserProfile, error) {
-	return s.repo.GetAllUsers()
+	usersModel, err := s.repo.GetAllUsers()
+	if err != nil {
+		return []dto.UserProfile{}, err
+	}
+
+	var usersDTO []dto.UserProfile
+
+	err = copier.Copy(&usersDTO, &usersModel)
+	if err != nil {
+		return []dto.UserProfile{}, err
+	}
+
+	return usersDTO, nil
 }
 
 func (s *AdminService) GetUserById(userId int) (dto.UserProfile, error) {
-	return s.repo.GetUserById(userId)
+	userModel, err := s.repo.GetUserById(userId)
+	if err != nil {
+		return dto.UserProfile{}, err
+	}
+
+	var userDTO dto.UserProfile
+
+	err = copier.Copy(&userDTO, &userModel)
+	if err != nil {
+		return dto.UserProfile{}, err
+	}
+
+	return userDTO, nil
 }
 
 func (s *AdminService) BlockUser(userId int, blocked bool) error {
@@ -46,4 +71,8 @@ func (s *AdminService) GetSystemStats() (dto.SystemStats, error) {
 
 func (s *AdminService) DeleteUser(userId int) error {
 	return s.repo.DeleteUser(userId)
+}
+
+func (s *AdminService) IsAdmin(userId int) (bool, error) {
+	return s.repo.IsAdmin(userId)
 }

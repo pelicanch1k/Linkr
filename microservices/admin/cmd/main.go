@@ -4,12 +4,13 @@ import (
 	"path/filepath"
 
 	"github.com/joho/godotenv"
-	"github.com/pelicanch1k/Linkr/profile/internal/config/db"
-	"github.com/pelicanch1k/Linkr/profile/internal/handler"
-	"github.com/pelicanch1k/Linkr/profile/internal/postgres"
-	"github.com/pelicanch1k/Linkr/profile/internal/router"
-	"github.com/pelicanch1k/Linkr/profile/internal/service"
-	"github.com/pelicanch1k/Linkr/profile/pkg/database"
+	// "github.com/pelicanch1k/Linkr/admin/internal/config"
+	"github.com/pelicanch1k/Linkr/admin/internal/config/db"
+	"github.com/pelicanch1k/Linkr/admin/internal/handler"
+	"github.com/pelicanch1k/Linkr/admin/internal/repository"
+	"github.com/pelicanch1k/Linkr/admin/internal/service"
+	router "github.com/pelicanch1k/Linkr/admin/internal/router/v1"
+	"github.com/pelicanch1k/Linkr/admin/pkg/database"
 	"github.com/pelicanch1k/ProductGatewayAPI/pkg/logging"
 	"github.com/spf13/viper"
 )
@@ -34,8 +35,8 @@ func main() {
 		logger.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
-	repos := postgres.NewRepository(driver)
-	service := service.NewService(repos)
+	repos := repository.NewRepository(driver)
+	service := service.NewAdminService(repos)
 	handler := handler.NewHandler(service, logger)
 
 	router := router.NewRouter(handler)

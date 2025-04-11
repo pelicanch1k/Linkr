@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pelicanch1k/Linkr/auth/internal/dto"
+	// "github.com/pelicanch1k/Linkr/auth/internal/model"
 	"github.com/pelicanch1k/Linkr/auth/internal/mvc/repository/postgres"
 )
 
@@ -33,26 +34,14 @@ type User interface {
 	GetUserNotifications(userId int) ([]dto.Notification, error)
 }
 
-type Admin interface {
-	GetAllUsers() ([]dto.UserProfile, error)
-	GetUserById(userId int) (dto.UserProfile, error)
-	UpdateUserBlockStatus(userId int, blocked bool) error
-	UpdateUserRole(userId int, role string) error
-	GetUserStatistics(userId int) (dto.UserStats, error)
-	GetSystemStatistics() (dto.SystemStats, error)
-	DeleteUser(userId int) error
-}
-
 type Repository struct {
 	Auth
 	User
-	Admin
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Auth:  postgres.NewAuthRepository(db),
 		User:  postgres.NewUserRepository(db),
-		Admin: postgres.NewAdminRepository(db),
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/pelicanch1k/Linkr/profile/internal/config/db"
+	"github.com/pelicanch1k/Linkr/admin/internal/config/db"
 )
 
 func NewPostgresDriver(cfg db.PostgresConfig) (*sqlx.DB, error) {

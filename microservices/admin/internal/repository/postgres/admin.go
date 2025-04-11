@@ -2,7 +2,8 @@ package postgres
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/pelicanch1k/Linkr/auth/internal/dto"
+	"github.com/pelicanch1k/Linkr/admin/internal/dto"
+	"github.com/pelicanch1k/Linkr/admin/internal/model"
 
 	_ "github.com/lib/pq"
 )
@@ -15,11 +16,9 @@ func NewAdminRepository(db *sqlx.DB) *AdminRepository {
 	return &AdminRepository{db}
 }
 
-func (r *AdminRepository) GetAllUsers() ([]dto.UserProfile, error) {
-	var users []dto.UserProfile
-	query := `SELECT user_id as id, username, email, first_name, last_name, 
-                     profile_picture_url as avatar, role, created_at
-              FROM users
+func (r *AdminRepository) GetAllUsers() ([]model.User, error) {
+	var users []model.User
+	query := `SELECT * FROM users
               WHERE (deleted IS NULL OR deleted = false)
               ORDER BY created_at DESC`
 
@@ -31,16 +30,14 @@ func (r *AdminRepository) GetAllUsers() ([]dto.UserProfile, error) {
 	return users, nil
 }
 
-func (r *AdminRepository) GetUserById(userId int) (dto.UserProfile, error) {
-	var user dto.UserProfile
-	query := `SELECT user_id as id, username, email, first_name, last_name, 
-                     profile_picture_url as avatar, role, created_at
-              FROM users
+func (r *AdminRepository) GetUserById(userId int) (model.User, error) {
+	var user model.User
+	query := `SELECT model.User FROM users
               WHERE user_id = $1 AND (deleted IS NULL OR deleted = false)`
 
 	err := r.db.Get(&user, query, userId)
 	if err != nil {
-		return dto.UserProfile{}, err
+		return model.User{}, err
 	}
 
 	return user, nil
@@ -133,4 +130,16 @@ func (r *AdminRepository) DeleteUser(userId int) error {
 	// Удаляем токены пользователя
 	_, err = r.db.Exec(`DELETE FROM user_tokens WHERE user_id = $1`, userId)
 	return err
+}
+
+func (r *AdminRepository) IsAdmin(userId int) (bool, error) {
+	query := `SELECT role FROM users WHERE user_id = $1 AND (deleted IS NULL OR deleted = false)`
+
+	var role string
+	err := r.db.Get(&role, query, userId)
+	if err != nil {
+		return false, err
+	}
+
+	return role == "admin", nil
 }

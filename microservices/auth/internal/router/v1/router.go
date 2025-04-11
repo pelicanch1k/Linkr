@@ -31,13 +31,13 @@ func NewRouter(h *handler.Handler) *fiber.App {
 	}
 
 	// Группа для административных функций
-	admin := app.Group("/api/admin/v1", h.AdminMiddleware)
-	{
-		admin.Get("/users", h.GetUsers)
-		admin.Get("/users/:id", h.GetUserById)
-		admin.Put("/users/:id/block", h.BlockUser)
-		admin.Put("/users/:id/role", h.ChangeUserRole)
-	}
+	// admin := app.Group("/api/admin/v1", h.AdminMiddleware)
+	// {
+	// 	admin.Get("/users", h.GetUsers)
+	// 	admin.Get("/users/:id", h.GetUserById)
+	// 	admin.Put("/users/:id/block", h.BlockUser)
+	// 	admin.Put("/users/:id/role", h.ChangeUserRole)
+	// }
 
 	return app
 }

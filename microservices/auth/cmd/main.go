@@ -42,7 +42,7 @@ func main() {
 
 	router := router.NewRouter(handler)
 
-	router.Listen(":" + viper.GetString("port"))
+	router.Listen(":" + "80")
 }
 
 func initConfig() error {
